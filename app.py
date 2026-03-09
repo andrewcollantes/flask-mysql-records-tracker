@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import mysql.connector
 
 app = Flask(__name__)
+app.secret_key = "mysecretkey123"
 
 # CONNECT TO MYSQL
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Your_Password",
+    password="YourActualMySQLPassword",
     database="maintenance_tracker"
 )
 
@@ -49,6 +50,7 @@ def add_record():
         """
         cursor.execute(query, (name, category, location, reference_code, quantity, status))
         db.commit()
+        flash("Record added successfully!", "success")
 
         return redirect(url_for("index"))
 
@@ -73,6 +75,7 @@ def edit_record(id):
         """
         cursor.execute(query, (name, category, location, reference_code, quantity, status, id))
         db.commit()
+        flash("Record updated successfully!", "success")
 
         return redirect(url_for("index"))
 
@@ -85,7 +88,9 @@ def edit_record(id):
 def delete_record(id):
     cursor.execute("DELETE FROM records WHERE id=%s", (id,))
     db.commit()
+    flash("Record deleted successfully!", "danger")
     return redirect(url_for("index"))
+    
 
 
 if __name__ == "__main__":
